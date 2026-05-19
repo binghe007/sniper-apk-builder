@@ -25,12 +25,7 @@ jobs:
         run: |
           pip3 install cython buildozer
 
-      - name: Setup Android SDK (via official action)
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-31 build-tools;30.0.3 platform-tools cmdline-tools;latest'
-
-      - name: Create sdkmanager symlink (Buildozer needs this)
+      - name: Fix sdkmanager path
         run: |
           mkdir -p /usr/local/lib/android/sdk/tools/bin
           ln -sf /usr/local/lib/android/sdk/cmdline-tools/latest/bin/sdkmanager \
@@ -40,7 +35,7 @@ jobs:
         run: |
           export ANDROID_HOME=/usr/local/lib/android/sdk
           export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/30.0.3:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/34.0.0:$PATH
           buildozer android debug
 
       - name: Upload APK
