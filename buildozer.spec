@@ -15,6 +15,8 @@ android.minapi = 21
 android.ndk = 23c
 android.build_tools_version = 30.0.3
 android.gradle_dependencies = 'androidx.appcompat:appcompat:1.6.1'
+android.skip_update = 1
+android.accept_sdk_license = True
 
 [buildozer]
 log_level = 2
