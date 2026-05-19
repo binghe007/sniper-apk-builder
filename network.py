@@ -6,7 +6,7 @@ import random
 import string
 import hmac
 
-SERVER_URL = "https://ipsniper.kesug.com/sniper/api.php?action=activate"
+SERVER_URL = "http://ipsniper.kesug.com/sniper/api.php?action=activate"
 EXPECTED_PUBKEY_HASH = None  # 暂时不启用，等你获取到再改
 
 def get_random_nonce(length=16):
