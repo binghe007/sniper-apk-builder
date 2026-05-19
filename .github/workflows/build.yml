@@ -25,32 +25,39 @@ jobs:
         run: |
           pip3 install cython buildozer
 
-      - name: Install Android SDK (manually to ensure aidl)
+      - name: Install Android SDK (with compatibility symlink)
         run: |
-          # 创建 Buildozer 默认 SDK 目录
           ANDROID_SDK_ROOT=$HOME/.buildozer/android/platform/android-sdk
           mkdir -p $ANDROID_SDK_ROOT
-
-          # 下载最新命令行工具
           cd $ANDROID_SDK_ROOT
+
+          # 下载命令行工具
           wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
           unzip -q commandlinetools-linux-*.zip
-          # 放置到 cmdline-tools/latest/ 目录 (正确结构)
           mkdir -p cmdline-tools/latest
           mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+
+          # 设置环境变量
           export ANDROID_HOME=$ANDROID_SDK_ROOT
           export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 
           # 接受许可
           yes | sdkmanager --licenses
 
-          # 安装需要的组件 (包含 aidl 的 build-tools)
+          # 安装需要的组件
           sdkmanager "build-tools;30.0.3" "platforms;android-30" "platform-tools"
+
+          # ★ 关键一步：创建符号链接，让 Buildozer 能找到 sdkmanager
+          mkdir -p tools/bin
+          ln -s $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager tools/bin/sdkmanager
+
+          # 验证 aidl 是否存在
+          ls -l $ANDROID_HOME/build-tools/30.0.3/aidl
 
       - name: Build APK
         run: |
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/30.0.3:$PATH
           buildozer android debug
 
       - name: Upload APK
