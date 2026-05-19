@@ -10,9 +10,9 @@ orientation = portrait
 fullscreen = 0
 android.permissions = INTERNET
 android.archs = arm64-v8a
-android.api = 31
+android.api = 30
 android.minapi = 21
-android.ndk = 25b
+android.ndk = 23c
 android.gradle_dependencies = 'androidx.appcompat:appcompat:1.6.1'
 
 [buildozer]
