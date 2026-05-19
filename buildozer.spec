@@ -23,8 +23,6 @@ android.ant_path =
 ios.kivy_version = 2.2.1
 ios.requirements = 
 p4a.source_dir = .
-p4a.local_recipes = .
-p4a.branch = master
 
 [buildozer]
 log_level = 2
