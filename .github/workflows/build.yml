@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK (Final)
 
 on:
   workflow_dispatch:
@@ -9,13 +9,45 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Build APK using official Kivy Buildozer Docker image
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install system dependencies
         run: |
-          docker run --rm \
-            -v ${{ github.workspace }}:/app \
-            -w /app \
-            kivy/buildozer:latest \
-            sh -c "yes | buildozer android debug"
+          sudo apt update
+          sudo apt install -y python3-pip python3-venv git openjdk-17-jdk unzip zip \
+            libltdl-dev libffi-dev libssl-dev autoconf libtool \
+            libc6-i386 lib32z1 lib32ncurses6 lib32stdc++6
+
+      - name: Install Buildozer and Cython
+        run: |
+          pip3 install cython buildozer
+
+      - name: Setup Android SDK (using official action)
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-31 build-tools;30.0.3 platform-tools cmdline-tools;latest'
+
+      - name: Fix Buildozer SDK path
+        run: |
+          mkdir -p $ANDROID_HOME/tools/bin
+          ln -sf $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager $ANDROID_HOME/tools/bin/sdkmanager
+          # 确保 aidl 在 PATH 中
+          echo "$ANDROID_HOME/build-tools/30.0.3" >> $GITHUB_PATH
+
+      - name: Disable root warning
+        run: |
+          mkdir -p ~/.buildozer
+          echo '[buildozer]' > ~/.buildozer/config.ini
+          echo 'warn_on_root = 0' >> ~/.buildozer/config.ini
+
+      - name: Build APK
+        run: |
+          export ANDROID_HOME=${{ env.ANDROID_HOME }}
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/build-tools/30.0.3:$PATH
+          buildozer android debug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
