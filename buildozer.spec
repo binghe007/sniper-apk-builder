@@ -13,6 +13,7 @@ android.archs = arm64-v8a
 android.api = 30
 android.minapi = 21
 android.ndk = 23c
+android.build_tools_version = 30.0.3
 android.gradle_dependencies = 'androidx.appcompat:appcompat:1.6.1'
 
 [buildozer]
